@@ -34,7 +34,7 @@ func main() {
 	app.Run(os.Args)
 }
 
-func handleThing(thing, meta string) []*jason.Object {
+func handleThing(thing, meta string, print bool) []*jason.Object {
 	v, _ := jason.NewObjectFromBytes([]byte(thing))
 	if v == nil {
 		return []*jason.Object{}
@@ -45,7 +45,9 @@ func handleThing(thing, meta string) []*jason.Object {
 	for _, item := range s {
 		stoken, _ := item.GetString("token")
 		sname, _ := item.GetString("name")
-		fmt.Println(stoken, sname)
+		if print {
+			fmt.Println(stoken, sname)
+		}
 	}
 	return s
 }
@@ -66,26 +68,26 @@ func SpacesAction(c *cli.Context) {
 	//email := c.Args().Get(0)
 
 	spaces := DoVerb("spaces")
-	handleThing(spaces, "spaces")
+	handleThing(spaces, "spaces", true)
 }
 func ReportsAction(c *cli.Context) {
 	space_id := c.Args().Get(0)
 
 	reports := DoVerb("spaces/" + space_id + "/reports")
-	handleThing(reports, "reports")
+	handleThing(reports, "reports", true)
 }
 func QueriesAction(c *cli.Context) {
 	report_id := c.Args().Get(0)
 
 	queries := DoVerb("reports/" + report_id + "/queries")
-	handleThing(queries, "queries")
+	handleThing(queries, "queries", true)
 }
 func SqlAction(c *cli.Context) {
 	report_id := c.Args().Get(0)
 	query_id := c.Args().Get(1)
 
 	queries := DoVerb("reports/" + report_id + "/queries")
-	items := handleThing(queries, "queries")
+	items := handleThing(queries, "queries", false)
 	for _, item := range items {
 		token, _ := item.GetString("token")
 		sql, _ := item.GetString("raw_query")
