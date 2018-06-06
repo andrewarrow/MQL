@@ -27,17 +27,17 @@ func main() {
 			Usage: "reports", Action: ReportsAction},
 		{Name: "queries", ShortName: "q",
 			Usage: "queries", Action: QueriesAction},
-		{Name: "token", ShortName: "t",
-			Usage: "token", Action: TokenAction},
+		{Name: "sql", ShortName: "l",
+			Usage: "sql", Action: SqlAction},
 	}
 
 	app.Run(os.Args)
 }
 
-func handleThing(thing, meta string) {
+func handleThing(thing, meta string) []*jason.Object {
 	v, _ := jason.NewObjectFromBytes([]byte(thing))
 	if v == nil {
-		return
+		return []*jason.Object{}
 	}
 	e, _ := v.GetObject("_embedded")
 	s, _ := e.GetObjectArray(meta)
@@ -47,6 +47,7 @@ func handleThing(thing, meta string) {
 		sname, _ := item.GetString("name")
 		fmt.Println(stoken, sname)
 	}
+	return s
 }
 func conf() map[string]string {
 	m := map[string]string{}
@@ -77,8 +78,17 @@ func QueriesAction(c *cli.Context) {
 	report_id := c.Args().Get(0)
 
 	queries := DoVerb("reports/" + report_id + "/queries")
-	handleThing(queries, "queries")
+	items := handleThing(queries, "queries")
+	for _, item := range items {
+		sql, _ := item.GetString("raw_query")
+		fmt.Println(sql)
+	}
 }
-func TokenAction(c *cli.Context) {
+func SqlAction(c *cli.Context) {
+	query_id := c.Args().Get(0)
+
+	r := DoVerb("query/" + query_id)
+	//handleThing(queries, "queries")
+	fmt.Println(r)
 
 }
