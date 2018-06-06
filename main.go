@@ -9,6 +9,7 @@ import "io/ioutil"
 
 import "strings"
 import "os"
+import "os/exec"
 
 //import "sort"
 
@@ -21,13 +22,13 @@ func main() {
 	app.Usage = "mode query language"
 	app.Version = "16"
 	app.Commands = []cli.Command{
-		{Name: "spaces", ShortName: "s",
+		{Name: "spaces", ShortName: "p",
 			Usage: "spaces", Action: SpacesAction},
 		{Name: "reports", ShortName: "r",
 			Usage: "reports", Action: ReportsAction},
 		{Name: "queries", ShortName: "q",
 			Usage: "queries", Action: QueriesAction},
-		{Name: "sql", ShortName: "l",
+		{Name: "sql", ShortName: "s",
 			Usage: "sql", Action: SqlAction},
 		{Name: "run", ShortName: "u",
 			Usage: "run", Action: RunAction},
@@ -83,24 +84,32 @@ func ReportsAction(c *cli.Context) {
 	handleThing(reports, "reports", true)
 }
 func QueriesAction(c *cli.Context) {
-	report_id := c.Args().Get(0)
+	i, _ := strconv.Atoi(c.Args().Get(0))
+	list := ReadList("reports")
 
-	queries := DoVerb("reports/" + report_id + "/queries")
+	queries := DoVerb("reports/" + list[i-1] + "/queries")
 	handleThing(queries, "queries", true)
 }
 func SqlAction(c *cli.Context) {
-	report_id := c.Args().Get(0)
-	query_id := c.Args().Get(1)
+	i, _ := strconv.Atoi(c.Args().Get(0))
+	j, _ := strconv.Atoi(c.Args().Get(1))
+	rlist := ReadList("reports")
+	qlist := ReadList("queries")
 
-	queries := DoVerb("reports/" + report_id + "/queries")
+	queries := DoVerb("reports/" + rlist[i-1] + "/queries")
 	items := handleThing(queries, "queries", false)
 	for _, item := range items {
 		token, _ := item.GetString("token")
 		sql, _ := item.GetString("raw_query")
-		if token == query_id {
-			fmt.Println(sql)
+		if token == qlist[j-1] {
+			SaveSQL(sql)
 		}
 	}
+	path := UserHomeDir() + "/.mql_sql"
+	cmd := exec.Command("vim", path)
+	cmd.Stdin = os.Stdin
+	cmd.Stdout = os.Stdout
+	cmd.Run()
 }
 func handleLinks(thing, meta string, print bool) []*jason.Object {
 	v, _ := jason.NewObjectFromBytes([]byte(thing))

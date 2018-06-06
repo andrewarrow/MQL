@@ -23,3 +23,6 @@ func ReadList(name string) []string {
 func SaveList(name string, list []string) {
 	ioutil.WriteFile(UserHomeDir()+"/.mql_"+name, []byte(strings.Join(list, ",")), 0644)
 }
+func SaveSQL(sql string) {
+	ioutil.WriteFile(UserHomeDir()+"/.mql_sql", []byte(sql), 0644)
+}
