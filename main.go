@@ -29,6 +29,8 @@ func main() {
 			Usage: "queries", Action: QueriesAction},
 		{Name: "sql", ShortName: "l",
 			Usage: "sql", Action: SqlAction},
+		{Name: "run", ShortName: "u",
+			Usage: "run", Action: RunAction},
 	}
 
 	app.Run(os.Args)
@@ -95,4 +97,29 @@ func SqlAction(c *cli.Context) {
 			fmt.Println(sql)
 		}
 	}
+}
+func handleLinks(thing, meta string, print bool) []*jason.Object {
+	v, _ := jason.NewObjectFromBytes([]byte(thing))
+	if v == nil {
+		return []*jason.Object{}
+	}
+	e, _ := v.GetObject("_embedded")
+	s, _ := e.GetObjectArray(meta)
+	//token name
+	for _, item := range s {
+		l, _ := item.GetObject("_links")
+		r, _ := l.GetObject("result")
+		h, _ := r.GetString("href")
+		if print {
+			fmt.Println(h)
+		}
+	}
+	return s
+}
+func RunAction(c *cli.Context) {
+	report_id := c.Args().Get(0)
+	query_id := c.Args().Get(1)
+	//7fc4ef93285f/runs/a7b21118dbd8/query_runs/7a4122f98cbc/results
+	r := DoVerb("reports/" + report_id + "/queries/" + query_id + "/runs")
+	handleLinks(r, "query_runs", true)
 }
