@@ -1,4 +1,8 @@
-token
 123
-secret
+token
 456
+secret
+acme
+name
+https://modeanalytics.com/api
+url

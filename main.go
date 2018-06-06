@@ -42,8 +42,13 @@ func ReportsAction(c *cli.Context) {
 			m[line] = prev
 		}
 	}
-	fmt.Println(m["token"])
+	token := m["token"]
+	secret := m["secret"]
+	url := m["url"]
+	name := m["name"]
 
+	spaces := DoVerb(token, secret, url, name, "spaces")
+	fmt.Println(spaces)
 }
 func TokenAction(c *cli.Context) {
 
