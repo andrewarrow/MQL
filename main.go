@@ -44,11 +44,11 @@ func handleThing(thing, meta string, print bool) []*jason.Object {
 	e, _ := v.GetObject("_embedded")
 	s, _ := e.GetObjectArray(meta)
 	//token name
-	for _, item := range s {
+	for i, item := range s {
 		stoken, _ := item.GetString("token")
 		sname, _ := item.GetString("name")
 		if print {
-			fmt.Println(stoken, sname)
+			fmt.Printf("%d. %s %s\n", i+1, stoken, sname)
 		}
 	}
 	return s
