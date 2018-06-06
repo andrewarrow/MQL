@@ -78,8 +78,11 @@ func SpacesAction(c *cli.Context) {
 }
 func ReportsAction(c *cli.Context) {
 	istr := c.Args().Get(0)
-	SaveLast("space", istr)
-	i, _ := strconv.Atoi(istr)
+	i := ReadLast("space")
+	if istr != "" {
+		SaveLast("space", istr)
+		i, _ = strconv.Atoi(istr)
+	}
 	list := ReadList("spaces")
 
 	reports := DoVerb("spaces/" + list[i-1] + "/reports")
@@ -87,8 +90,11 @@ func ReportsAction(c *cli.Context) {
 }
 func QueriesAction(c *cli.Context) {
 	istr := c.Args().Get(0)
-	SaveLast("report", istr)
-	i, _ := strconv.Atoi(istr)
+	i := ReadLast("report")
+	if istr != "" {
+		SaveLast("report", istr)
+		i, _ = strconv.Atoi(istr)
+	}
 	list := ReadList("reports")
 
 	queries := DoVerb("reports/" + list[i-1] + "/queries")
@@ -96,9 +102,12 @@ func QueriesAction(c *cli.Context) {
 }
 func SqlAction(c *cli.Context) {
 	i := ReadLast("report")
-	jstr := c.Args().Get(1)
-	j, _ := strconv.Atoi(jstr)
-	SaveLast("query", jstr)
+	j := ReadLast("query")
+	jstr := c.Args().Get(0)
+	if jstr != "" {
+		SaveLast("query", jstr)
+		j, _ = strconv.Atoi(jstr)
+	}
 	rlist := ReadList("reports")
 	qlist := ReadList("queries")
 
