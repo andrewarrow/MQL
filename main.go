@@ -32,13 +32,13 @@ func main() {
 	app.Run(os.Args)
 }
 
-func handleThing(thing string) {
+func handleThing(thing, meta string) {
 	v, _ := jason.NewObjectFromBytes([]byte(thing))
 	if v == nil {
 		return
 	}
 	e, _ := v.GetObject("_embedded")
-	s, _ := e.GetObjectArray("spaces")
+	s, _ := e.GetObjectArray(meta)
 	//token name
 	for _, item := range s {
 		stoken, _ := item.GetString("token")
@@ -63,13 +63,13 @@ func SpacesAction(c *cli.Context) {
 	//email := c.Args().Get(0)
 
 	spaces := DoVerb("spaces")
-	handleThing(spaces)
+	handleThing(spaces, "spaces")
 }
 func ReportsAction(c *cli.Context) {
-	//email := c.Args().Get(0)
+	space_id := c.Args().Get(0)
 
-	spaces := DoVerb("spaces")
-	handleThing(spaces)
+	reports := DoVerb("spaces/" + space_id + "/reports")
+	handleThing(reports, "reports")
 }
 func TokenAction(c *cli.Context) {
 
