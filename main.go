@@ -12,7 +12,7 @@ import "os"
 
 //import "sort"
 
-//import "github.com/antonholmquist/jason"
+import "github.com/antonholmquist/jason"
 
 func main() {
 	rand.Seed(time.Now().UnixNano())
@@ -48,7 +48,17 @@ func ReportsAction(c *cli.Context) {
 	name := m["name"]
 
 	spaces := DoVerb(token, secret, url, name, "spaces")
-	fmt.Println(spaces)
+	v, _ := jason.NewObjectFromBytes([]byte(spaces))
+	if v == nil {
+		return
+	}
+	e, _ := v.GetObject("_embedded")
+	s, _ := e.GetObjectArray("spaces")
+	//token name
+	for _, item := range s {
+		stoken, _ := item.GetString("token")
+		fmt.Println(stoken)
+	}
 }
 func TokenAction(c *cli.Context) {
 
