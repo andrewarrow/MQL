@@ -105,7 +105,7 @@ func SqlAction(c *cli.Context) {
 			SaveSQL(sql)
 		}
 	}
-	path := UserHomeDir() + "/.mql_sql"
+	path := UserHomeDir() + "/.mql.sql"
 	cmd := exec.Command("vim", path)
 	cmd.Stdin = os.Stdin
 	cmd.Stdout = os.Stdout
