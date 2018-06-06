@@ -78,17 +78,19 @@ func QueriesAction(c *cli.Context) {
 	report_id := c.Args().Get(0)
 
 	queries := DoVerb("reports/" + report_id + "/queries")
-	items := handleThing(queries, "queries")
-	for _, item := range items {
-		sql, _ := item.GetString("raw_query")
-		fmt.Println(sql)
-	}
+	handleThing(queries, "queries")
 }
 func SqlAction(c *cli.Context) {
-	query_id := c.Args().Get(0)
+	report_id := c.Args().Get(0)
+	query_id := c.Args().Get(1)
 
-	r := DoVerb("query/" + query_id)
-	//handleThing(queries, "queries")
-	fmt.Println(r)
-
+	queries := DoVerb("reports/" + report_id + "/queries")
+	items := handleThing(queries, "queries")
+	for _, item := range items {
+		token, _ := item.GetString("token")
+		sql, _ := item.GetString("raw_query")
+		if token == query_id {
+			fmt.Println(sql)
+		}
+	}
 }
