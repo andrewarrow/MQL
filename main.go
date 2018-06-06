@@ -25,6 +25,8 @@ func main() {
 			Usage: "spaces", Action: SpacesAction},
 		{Name: "reports", ShortName: "r",
 			Usage: "reports", Action: ReportsAction},
+		{Name: "queries", ShortName: "q",
+			Usage: "queries", Action: QueriesAction},
 		{Name: "token", ShortName: "t",
 			Usage: "token", Action: TokenAction},
 	}
@@ -70,6 +72,12 @@ func ReportsAction(c *cli.Context) {
 
 	reports := DoVerb("spaces/" + space_id + "/reports")
 	handleThing(reports, "reports")
+}
+func QueriesAction(c *cli.Context) {
+	report_id := c.Args().Get(0)
+
+	queries := DoVerb("reports/" + report_id + "/queries")
+	handleThing(queries, "queries")
 }
 func TokenAction(c *cli.Context) {
 
