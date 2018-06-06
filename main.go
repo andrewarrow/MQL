@@ -1,7 +1,7 @@
 package main
 
 import "fmt"
-
+import "strconv"
 import "github.com/codegangsta/cli"
 import "time"
 import "math/rand"
@@ -44,13 +44,16 @@ func handleThing(thing, meta string, print bool) []*jason.Object {
 	e, _ := v.GetObject("_embedded")
 	s, _ := e.GetObjectArray(meta)
 	//token name
+	list := []string{}
 	for i, item := range s {
 		stoken, _ := item.GetString("token")
 		sname, _ := item.GetString("name")
+		list = append(list, stoken)
 		if print {
 			fmt.Printf("%d. %s %s\n", i+1, stoken, sname)
 		}
 	}
+	SaveList(meta, list)
 	return s
 }
 func conf() map[string]string {
@@ -73,9 +76,10 @@ func SpacesAction(c *cli.Context) {
 	handleThing(spaces, "spaces", true)
 }
 func ReportsAction(c *cli.Context) {
-	space_id := c.Args().Get(0)
+	i, _ := strconv.Atoi(c.Args().Get(0))
+	list := ReadList("spaces")
 
-	reports := DoVerb("spaces/" + space_id + "/reports")
+	reports := DoVerb("spaces/" + list[i-1] + "/reports")
 	handleThing(reports, "reports", true)
 }
 func QueriesAction(c *cli.Context) {
