@@ -21,6 +21,8 @@ func main() {
 	app.Usage = "mode query language"
 	app.Version = "16"
 	app.Commands = []cli.Command{
+		{Name: "spaces", ShortName: "s",
+			Usage: "spaces", Action: SpacesAction},
 		{Name: "reports", ShortName: "r",
 			Usage: "reports", Action: ReportsAction},
 		{Name: "token", ShortName: "t",
@@ -30,8 +32,21 @@ func main() {
 	app.Run(os.Args)
 }
 
-func ReportsAction(c *cli.Context) {
-	//email := c.Args().Get(0)
+func handleThing(thing string) {
+	v, _ := jason.NewObjectFromBytes([]byte(thing))
+	if v == nil {
+		return
+	}
+	e, _ := v.GetObject("_embedded")
+	s, _ := e.GetObjectArray("spaces")
+	//token name
+	for _, item := range s {
+		stoken, _ := item.GetString("token")
+		sname, _ := item.GetString("name")
+		fmt.Println(stoken, sname)
+	}
+}
+func conf() map[string]string {
 	m := map[string]string{}
 	b, _ := ioutil.ReadFile("conf/settings")
 	prev := ""
@@ -42,23 +57,19 @@ func ReportsAction(c *cli.Context) {
 			m[line] = prev
 		}
 	}
-	token := m["token"]
-	secret := m["secret"]
-	url := m["url"]
-	name := m["name"]
+	return m
+}
+func SpacesAction(c *cli.Context) {
+	//email := c.Args().Get(0)
 
-	spaces := DoVerb(token, secret, url, name, "spaces")
-	v, _ := jason.NewObjectFromBytes([]byte(spaces))
-	if v == nil {
-		return
-	}
-	e, _ := v.GetObject("_embedded")
-	s, _ := e.GetObjectArray("spaces")
-	//token name
-	for _, item := range s {
-		stoken, _ := item.GetString("token")
-		fmt.Println(stoken)
-	}
+	spaces := DoVerb("spaces")
+	handleThing(spaces)
+}
+func ReportsAction(c *cli.Context) {
+	//email := c.Args().Get(0)
+
+	spaces := DoVerb("spaces")
+	handleThing(spaces)
 }
 func TokenAction(c *cli.Context) {
 

@@ -5,8 +5,12 @@ import "io/ioutil"
 import "net/http"
 import "encoding/base64"
 
-func DoVerb(token, secret, prefix, name, route string) string {
-
+func DoVerb(route string) string {
+	m := conf()
+	token := m["token"]
+	secret := m["secret"]
+	prefix := m["url"]
+	name := m["name"]
 	url := fmt.Sprintf("%s/%s/%s", prefix, name, route)
 	request, _ := http.NewRequest("GET", url, nil)
 
