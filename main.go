@@ -77,13 +77,19 @@ func SpacesAction(c *cli.Context) {
 	handleThing(spaces, "spaces", true)
 }
 func ReportsAction(c *cli.Context) {
-	istr := c.Args().Get(0)
 	i := ReadLast("space")
+	list := ReadList("spaces")
+
+	istr := c.Args().Get(0)
+	if istr == "new" {
+		params := map[string]interface{}{"name": "test"}
+		DoPVerb("post", "spaces/"+list[i-1]+"/reports", params)
+		return
+	}
 	if istr != "" {
 		SaveLast("space", istr)
 		i, _ = strconv.Atoi(istr)
 	}
-	list := ReadList("spaces")
 
 	reports := DoVerb("spaces/" + list[i-1] + "/reports")
 	handleThing(reports, "reports", true)
