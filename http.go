@@ -4,6 +4,7 @@ import "fmt"
 import "io/ioutil"
 import "net/http"
 import "bytes"
+import "compress/gzip"
 
 //import "encoding/json"
 import "encoding/base64"
@@ -59,6 +60,7 @@ func DoVerb(route string) string {
 
 	sEnc := base64.StdEncoding.EncodeToString([]byte(token + ":" + secret))
 
+	request.Header.Add("Accept-Encoding", "gzip")
 	request.Header.Set("Authorization", "BASIC "+sEnc)
 	request.Header.Set("Content-Type", "application/json")
 	request.Header.Set("Accept", "application/hal+json")
@@ -67,7 +69,8 @@ func DoVerb(route string) string {
 	resp, err := client.Do(request)
 	if err == nil {
 		defer resp.Body.Close()
-		body, err := ioutil.ReadAll(resp.Body)
+		reader, err := gzip.NewReader(resp.Body)
+		body, err := ioutil.ReadAll(reader)
 		if err == nil {
 			if resp.StatusCode == 200 {
 				return string(body)
