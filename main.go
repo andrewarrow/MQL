@@ -131,6 +131,8 @@ func RunAction(c *cli.Context) {
 	qlist = ReadList("query_runs")
 	r := DoVerbFullPath(qlist[0])
 	fmt.Println(r)
+	r = DoVerbFullPath(qlist[0] + "/content.json")
+	fmt.Println(r)
 }
 func SqlAction(c *cli.Context) {
 	i := ReadLast("report")
