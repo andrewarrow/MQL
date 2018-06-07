@@ -1,7 +1,8 @@
 package main
 
 import "fmt"
-import "strconv"
+
+//import "strconv"
 import "github.com/codegangsta/cli"
 import "time"
 import "math/rand"
@@ -22,7 +23,7 @@ func main() {
 	app.Usage = "alamode command line interface for mode"
 	app.Version = "16"
 	app.Commands = []cli.Command{
-		{Name: "spaces", ShortName: "p",
+		{Name: "spaces", ShortName: "sp",
 			Usage: "spaces", Action: SpacesAction},
 		{Name: "reports", ShortName: "r",
 			Usage: "reports", Action: ReportsAction},
@@ -71,36 +72,41 @@ func conf() map[string]string {
 	return m
 }
 func SpacesAction(c *cli.Context) {
-	//email := c.Args().Get(0)
-
+	istr := c.Args().Get(0)
+	if istr != "" {
+		SaveLast("space", istr)
+		return
+	}
 	spaces := DoVerb("spaces")
 	handleThing(spaces, "spaces", true)
 }
 func ReportsAction(c *cli.Context) {
+	istr := c.Args().Get(0)
+	if istr != "" {
+		SaveLast("report", istr)
+		return
+	}
+
 	i := ReadLast("space")
 	list := ReadList("spaces")
 
-	istr := c.Args().Get(0)
-	if istr == "new" {
+	/*if istr == "new" {
 		params := map[string]interface{}{"name": "test"}
 		DoPVerb("post", "spaces/"+list[i-1]+"/reports", params)
 		return
-	}
-	if istr != "" {
-		SaveLast("space", istr)
-		i, _ = strconv.Atoi(istr)
-	}
+	}*/
 
 	reports := DoVerb("spaces/" + list[i-1] + "/reports")
 	handleThing(reports, "reports", true)
 }
 func QueriesAction(c *cli.Context) {
 	istr := c.Args().Get(0)
-	i := ReadLast("report")
 	if istr != "" {
-		SaveLast("report", istr)
-		i, _ = strconv.Atoi(istr)
+		SaveLast("query", istr)
+		return
 	}
+
+	i := ReadLast("report")
 	list := ReadList("reports")
 
 	queries := DoVerb("reports/" + list[i-1] + "/queries")
@@ -109,11 +115,6 @@ func QueriesAction(c *cli.Context) {
 func SqlAction(c *cli.Context) {
 	i := ReadLast("report")
 	j := ReadLast("query")
-	jstr := c.Args().Get(0)
-	if jstr != "" {
-		SaveLast("query", jstr)
-		j, _ = strconv.Atoi(jstr)
-	}
 	rlist := ReadList("reports")
 	qlist := ReadList("queries")
 
