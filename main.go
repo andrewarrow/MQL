@@ -18,8 +18,8 @@ import "github.com/antonholmquist/jason"
 func main() {
 	rand.Seed(time.Now().UnixNano())
 	app := cli.NewApp()
-	app.Name = "mql"
-	app.Usage = "mode query language"
+	app.Name = "alamode"
+	app.Usage = "alamode command line interface for mode"
 	app.Version = "16"
 	app.Commands = []cli.Command{
 		{Name: "spaces", ShortName: "p",
