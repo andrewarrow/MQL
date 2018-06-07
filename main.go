@@ -157,16 +157,19 @@ func handleLinks(thing, meta string, print bool) []*jason.Object {
 	e, _ := v.GetObject("_embedded")
 	s, _ := e.GetObjectArray(meta)
 	//token name
-	for _, item := range s {
-		//l, _ := item.GetObject("_links")
-		//r, _ := l.GetObject("result")
-		//h, _ := r.GetString("href")
+	list := []string{}
+	for i, item := range s {
+		l, _ := item.GetObject("_links")
+		r, _ := l.GetObject("result")
+		href, _ := r.GetString("href")
 		cra, _ := item.GetString("created_at")
 		//coa, _ := item.GetString("completed_at")
+		list = append(list, href)
 		if print {
 			tokens := strings.Split(cra, "T")
-			fmt.Printf("%s %s\n", tokens[0], strings.Split(tokens[1], ".")[0])
+			fmt.Printf("%d. %s %s\n", i+1, tokens[0], strings.Split(tokens[1], ".")[0])
 		}
 	}
+	SaveList(meta, list)
 	return s
 }
