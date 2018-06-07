@@ -49,13 +49,12 @@ func DoPVerb(verb string, route string, params map[string]interface{}) string {
 	return ""
 }
 
-func DoVerb(route string) string {
+func DoVerbFullPath(route string) string {
 	m := conf()
 	token := m["token"]
 	secret := m["secret"]
 	prefix := m["url"]
-	name := m["name"]
-	url := fmt.Sprintf("%s/%s/%s", prefix, name, route)
+	url := fmt.Sprintf("%s/%s", prefix, route)
 	request, _ := http.NewRequest("GET", url, nil)
 
 	sEnc := base64.StdEncoding.EncodeToString([]byte(token + ":" + secret))
@@ -84,4 +83,9 @@ func DoVerb(route string) string {
 		fmt.Println(err)
 	}
 	return ""
+}
+func DoVerb(route string) string {
+	m := conf()
+	name := m["name"]
+	return DoVerbFullPath("api/" + name + "/" + route)
 }

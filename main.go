@@ -124,9 +124,13 @@ func RunAction(c *cli.Context) {
 		if token == qlist[j-1] {
 			r := DoVerb("reports/" + rlist[i-1] + "/queries/" + token + "/runs")
 			handleLinks(r, "query_runs", true)
+			SaveLast("query_run", "1")
 			break
 		}
 	}
+	qlist = ReadList("query_runs")
+	r := DoVerbFullPath(qlist[0])
+	fmt.Println(r)
 }
 func SqlAction(c *cli.Context) {
 	i := ReadLast("report")
