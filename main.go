@@ -112,6 +112,22 @@ func QueriesAction(c *cli.Context) {
 	queries := DoVerb("reports/" + list[i-1] + "/queries")
 	handleThing(queries, "queries", true)
 }
+func RunAction(c *cli.Context) {
+	i := ReadLast("report")
+	j := ReadLast("query")
+	rlist := ReadList("reports")
+	qlist := ReadList("queries")
+	queries := DoVerb("reports/" + rlist[i-1] + "/queries")
+	items := handleThing(queries, "queries", false)
+	for _, item := range items {
+		token, _ := item.GetString("token")
+		if token == qlist[j-1] {
+			r := DoVerb("reports/" + rlist[i-1] + "/queries/" + token + "/runs")
+			handleLinks(r, "query_runs", true)
+			break
+		}
+	}
+}
 func SqlAction(c *cli.Context) {
 	i := ReadLast("report")
 	j := ReadLast("query")
@@ -142,19 +158,15 @@ func handleLinks(thing, meta string, print bool) []*jason.Object {
 	s, _ := e.GetObjectArray(meta)
 	//token name
 	for _, item := range s {
-		l, _ := item.GetObject("_links")
-		r, _ := l.GetObject("result")
-		h, _ := r.GetString("href")
+		//l, _ := item.GetObject("_links")
+		//r, _ := l.GetObject("result")
+		//h, _ := r.GetString("href")
+		cra, _ := item.GetString("created_at")
+		//coa, _ := item.GetString("completed_at")
 		if print {
-			fmt.Println(h)
+			tokens := strings.Split(cra, "T")
+			fmt.Printf("%s %s\n", tokens[0], strings.Split(tokens[1], ".")[0])
 		}
 	}
 	return s
-}
-func RunAction(c *cli.Context) {
-	report_id := c.Args().Get(0)
-	query_id := c.Args().Get(1)
-	//7fc4ef93285f/runs/a7b21118dbd8/query_runs/7a4122f98cbc/results
-	r := DoVerb("reports/" + report_id + "/queries/" + query_id + "/runs")
-	handleLinks(r, "query_runs", true)
 }
