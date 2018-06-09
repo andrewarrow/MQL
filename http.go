@@ -23,7 +23,7 @@ func DoPVerb(verb string, route string, params map[string]interface{}) string {
 	secret := m["secret"]
 	prefix := m["url"]
 	name := m["name"]
-	url := fmt.Sprintf("%s/%s/%s", prefix, name, route)
+	url := fmt.Sprintf("%s/api/%s/%s", prefix, name, route)
 	request, _ := http.NewRequest(verb, url, body)
 
 	sEnc := base64.StdEncoding.EncodeToString([]byte(token + ":" + secret))

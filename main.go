@@ -122,11 +122,12 @@ func RunAction(c *cli.Context) {
 	thing := map[string]interface{}{"selected": false, "value": 100}
 	rr := map[string]interface{}{"limit": thing}
 	query := map[string]interface{}{"create_query_run": true,
-		"limit": false, "data_source_id": 8420,
-		"name": "People", "raw_query": sql, "token": qlist[j-1]}
+		"limit": false, //"data_source_id": 8420,
+		//"name": "People",
+		"raw_query": sql, "token": qlist[j-1]}
 	iqueries := []map[string]interface{}{query}
 
-	report := map[string]interface{}{"name": "GunMeta", "description": "",
+	report := map[string]interface{}{ //"name": "GunMeta", "description": "",
 		"report_run": rr,
 		"queries[]":  iqueries,
 		"trk_source": "editor"}
