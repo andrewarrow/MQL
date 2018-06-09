@@ -25,13 +25,13 @@ func main() {
 	app.Commands = []cli.Command{
 		{Name: "spaces", ShortName: "sp",
 			Usage: "spaces", Action: SpacesAction},
-		{Name: "reports", ShortName: "r",
+		{Name: "reports", ShortName: "re",
 			Usage: "reports", Action: ReportsAction},
 		{Name: "queries", ShortName: "q",
 			Usage: "queries", Action: QueriesAction},
 		{Name: "sql", ShortName: "s",
 			Usage: "sql", Action: SqlAction},
-		{Name: "run", ShortName: "u",
+		{Name: "run", ShortName: "r",
 			Usage: "run", Action: RunAction},
 	}
 
@@ -123,14 +123,14 @@ func RunAction(c *cli.Context) {
 		token, _ := item.GetString("token")
 		if token == qlist[j-1] {
 			r := DoVerb("reports/" + rlist[i-1] + "/queries/" + token + "/runs")
-			handleLinks(r, "query_runs", true)
+			handleLinks(r, "query_runs", false)
 			SaveLast("query_run", "1")
 			break
 		}
 	}
 	qlist = ReadList("query_runs")
 	r := DoVerbFullPath(qlist[0])
-	fmt.Println(r)
+	//fmt.Println(r)
 	r = DoVerbFullPath(qlist[0] + "/content.json")
 	fmt.Println(r)
 }
@@ -146,10 +146,10 @@ func SqlAction(c *cli.Context) {
 		token, _ := item.GetString("token")
 		sql, _ := item.GetString("raw_query")
 		if token == qlist[j-1] {
-			SaveSQL(sql)
+			SaveSQL(sql, token)
 		}
 	}
-	path := UserHomeDir() + "/.mql.sql"
+	path := UserHomeDir() + "/.mql_" + qlist[j-1] + ".sql"
 	cmd := exec.Command("vim", path)
 	cmd.Stdin = os.Stdin
 	cmd.Stdout = os.Stdout

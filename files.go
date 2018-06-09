@@ -32,6 +32,6 @@ func SaveLast(name string, index string) {
 func SaveList(name string, list []string) {
 	ioutil.WriteFile(UserHomeDir()+"/.mql_"+name, []byte(strings.Join(list, ",")), 0644)
 }
-func SaveSQL(sql string) {
-	ioutil.WriteFile(UserHomeDir()+"/.mql.sql", []byte(sql), 0644)
+func SaveSQL(sql, token string) {
+	ioutil.WriteFile(UserHomeDir()+"/.mql_"+token+".sql", []byte(sql), 0644)
 }
