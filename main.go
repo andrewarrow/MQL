@@ -134,8 +134,10 @@ func RunAction(c *cli.Context) {
 		return
 	}
 	newToken, _ := v.GetString("token")
+	url := fmt.Sprintf("reports/%s/runs/%s/results/content.json", rToken, newToken)
+	r := DoVerb(url)
+	fmt.Println(r)
 
-	fmt.Println(newToken)
 	if false {
 		queries := DoVerb("reports/" + rToken + "/queries")
 
