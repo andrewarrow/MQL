@@ -35,3 +35,7 @@ func SaveList(name string, list []string) {
 func SaveSQL(sql, token string) {
 	ioutil.WriteFile(UserHomeDir()+"/.mql_"+token+".sql", []byte(sql), 0644)
 }
+func ReadSQL(token string) string {
+	data, _ := ioutil.ReadFile(UserHomeDir() + "/.mql_" + token + ".sql")
+	return string(data)
+}

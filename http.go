@@ -6,13 +6,13 @@ import "net/http"
 import "bytes"
 import "compress/gzip"
 
-//import "encoding/json"
+import "encoding/json"
 import "encoding/base64"
 
 func DoPVerb(verb string, route string, params map[string]interface{}) string {
 
-	//var buf, _ = json.Marshal(params)
-	body := bytes.NewBuffer([]byte("name=test"))
+	var buf, _ = json.Marshal(params)
+	body := bytes.NewBuffer(buf)
 
 	m := conf()
 	token := m["token"]
@@ -25,8 +25,8 @@ func DoPVerb(verb string, route string, params map[string]interface{}) string {
 	sEnc := base64.StdEncoding.EncodeToString([]byte(token + ":" + secret))
 
 	request.Header.Set("Authorization", "BASIC "+sEnc)
-	request.Header.Set("Content-Type", "application/x-www-form-urlencoded")
-	//request.Header.Set("Content-Type", "application/json")
+	//request.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+	request.Header.Set("Content-Type", "application/json")
 	request.Header.Set("Accept", "application/hal+json")
 	client := &http.Client{}
 

@@ -117,7 +117,13 @@ func RunAction(c *cli.Context) {
 	j := ReadLast("query")
 	rlist := ReadList("reports")
 	qlist := ReadList("queries")
+
+	sql := ReadSQL(qlist[j-1])
+	params := map[string]interface{}{"raw_query": sql}
+	DoPVerb("patch", "reports/"+rlist[i-1]+"/queries/"+qlist[j-1], params)
+
 	queries := DoVerb("reports/" + rlist[i-1] + "/queries")
+
 	items := handleThing(queries, "queries", false)
 	for _, item := range items {
 		token, _ := item.GetString("token")
