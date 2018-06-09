@@ -2,7 +2,7 @@ package main
 
 import "fmt"
 
-//import "strconv"
+import "strconv"
 import "github.com/codegangsta/cli"
 import "time"
 import "math/rand"
@@ -74,7 +74,9 @@ func conf() map[string]string {
 func SpacesAction(c *cli.Context) {
 	istr := c.Args().Get(0)
 	if istr != "" {
-		SaveLast("space", istr)
+		i, _ := strconv.Atoi(istr)
+		list := ReadList("spaces")
+		SaveLast("space", list[i-1])
 		return
 	}
 	spaces := DoVerb("spaces")
@@ -83,48 +85,41 @@ func SpacesAction(c *cli.Context) {
 func ReportsAction(c *cli.Context) {
 	istr := c.Args().Get(0)
 	if istr != "" {
-		SaveLast("report", istr)
+		i, _ := strconv.Atoi(istr)
+		list := ReadList("reports")
+		SaveLast("report", list[i-1])
 		return
 	}
 
-	i := ReadLast("space")
-	list := ReadList("spaces")
-
-	/*if istr == "new" {
-		params := map[string]interface{}{"name": "test"}
-		DoPVerb("post", "spaces/"+list[i-1]+"/reports", params)
-		return
-	}*/
-
-	reports := DoVerb("spaces/" + list[i-1] + "/reports")
+	spaceToken := ReadLast("space")
+	reports := DoVerb("spaces/" + spaceToken + "/reports")
 	handleThing(reports, "reports", true)
 }
 func QueriesAction(c *cli.Context) {
 	istr := c.Args().Get(0)
 	if istr != "" {
-		SaveLast("query", istr)
+		i, _ := strconv.Atoi(istr)
+		list := ReadList("queries")
+		SaveLast("query", list[i-1])
 		return
 	}
 
-	i := ReadLast("report")
-	list := ReadList("reports")
+	token := ReadLast("report")
 
-	queries := DoVerb("reports/" + list[i-1] + "/queries")
+	queries := DoVerb("reports/" + token + "/queries")
 	handleThing(queries, "queries", true)
 }
 func RunAction(c *cli.Context) {
-	i := ReadLast("report")
-	j := ReadLast("query")
-	rlist := ReadList("reports")
-	qlist := ReadList("queries")
+	rToken := ReadLast("report")
+	qToken := ReadLast("query")
 
-	sql := ReadSQL(qlist[j-1])
+	sql := ReadSQL(qToken)
 	thing := map[string]interface{}{"selected": false, "value": 100}
 	rr := map[string]interface{}{"limit": thing}
 	query := map[string]interface{}{"create_query_run": true,
 		"limit": false, //"data_source_id": 8420,
 		//"name": "People",
-		"raw_query": sql, "token": qlist[j-1]}
+		"raw_query": sql, "token": qToken}
 	iqueries := []map[string]interface{}{query}
 
 	report := map[string]interface{}{ //"name": "GunMeta", "description": "",
@@ -132,45 +127,43 @@ func RunAction(c *cli.Context) {
 		"queries[]":  iqueries,
 		"trk_source": "editor"}
 	ireport := map[string]interface{}{"report": report}
-	DoPVerb("POST", "reports/"+rlist[i-1]+"/runs", ireport)
+	DoPVerb("POST", "reports/"+rToken+"/runs", ireport)
 
-	queries := DoVerb("reports/" + rlist[i-1] + "/queries")
+	queries := DoVerb("reports/" + rToken + "/queries")
 
 	items := handleThing(queries, "queries", false)
 	for _, item := range items {
 		token, _ := item.GetString("token")
 		dsi, _ := item.GetNumber("data_source_id")
 		name, _ := item.GetString("name")
-		if token == qlist[j-1] {
-			r := DoVerb("reports/" + rlist[i-1] + "/queries/" + token + "/runs")
+		if token == qToken {
+			r := DoVerb("reports/" + rToken + "/queries/" + token + "/runs")
 			handleLinks(r, "query_runs", false)
 			SaveLast("query_run", "1")
 			fmt.Println(dsi, name)
 			break
 		}
 	}
-	qlist = ReadList("query_runs")
+	qlist := ReadList("query_runs")
 	r := DoVerbFullPath(qlist[0])
 	//fmt.Println(r)
 	r = DoVerbFullPath(qlist[0] + "/content.json")
 	fmt.Println(r)
 }
 func SqlAction(c *cli.Context) {
-	i := ReadLast("report")
-	j := ReadLast("query")
-	rlist := ReadList("reports")
-	qlist := ReadList("queries")
+	rToken := ReadLast("report")
+	qToken := ReadLast("query")
 
-	queries := DoVerb("reports/" + rlist[i-1] + "/queries")
+	queries := DoVerb("reports/" + rToken + "/queries")
 	items := handleThing(queries, "queries", false)
 	for _, item := range items {
 		token, _ := item.GetString("token")
 		sql, _ := item.GetString("raw_query")
-		if token == qlist[j-1] {
+		if token == qToken {
 			SaveSQL(sql, token)
 		}
 	}
-	path := UserHomeDir() + "/.mql_" + qlist[j-1] + ".sql"
+	path := UserHomeDir() + "/.mql_" + qToken + ".sql"
 	cmd := exec.Command("vim", path)
 	cmd.Stdin = os.Stdin
 	cmd.Stdout = os.Stdout
