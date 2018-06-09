@@ -119,18 +119,32 @@ func RunAction(c *cli.Context) {
 	qlist := ReadList("queries")
 
 	sql := ReadSQL(qlist[j-1])
-	params := map[string]interface{}{"raw_query": sql}
-	DoPVerb("patch", "reports/"+rlist[i-1]+"/queries/"+qlist[j-1], params)
+	thing := map[string]interface{}{"selected": false, "value": 100}
+	rr := map[string]interface{}{"limit": thing}
+	query := map[string]interface{}{"create_query_run": true,
+		"limit": false, "data_source_id": 8420,
+		"name": "People", "raw_query": sql, "token": qlist[j-1]}
+	iqueries := []map[string]interface{}{query}
+
+	report := map[string]interface{}{"name": "GunMeta", "description": "",
+		"report_run": rr,
+		"queries[]":  iqueries,
+		"trk_source": "editor"}
+	ireport := map[string]interface{}{"report": report}
+	DoPVerb("POST", "reports/"+rlist[i-1]+"/runs", ireport)
 
 	queries := DoVerb("reports/" + rlist[i-1] + "/queries")
 
 	items := handleThing(queries, "queries", false)
 	for _, item := range items {
 		token, _ := item.GetString("token")
+		dsi, _ := item.GetNumber("data_source_id")
+		name, _ := item.GetString("name")
 		if token == qlist[j-1] {
 			r := DoVerb("reports/" + rlist[i-1] + "/queries/" + token + "/runs")
 			handleLinks(r, "query_runs", false)
 			SaveLast("query_run", "1")
+			fmt.Println(dsi, name)
 			break
 		}
 	}

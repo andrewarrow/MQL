@@ -3,6 +3,8 @@ package main
 import "fmt"
 import "io/ioutil"
 import "net/http"
+
+//import "net/url"
 import "bytes"
 import "compress/gzip"
 
@@ -12,6 +14,8 @@ import "encoding/base64"
 func DoPVerb(verb string, route string, params map[string]interface{}) string {
 
 	var buf, _ = json.Marshal(params)
+	fmt.Println(string(buf))
+	//body := bytes.NewBuffer([]byte("raw_query=" + url.QueryEscape(sql)))
 	body := bytes.NewBuffer(buf)
 
 	m := conf()
@@ -27,7 +31,9 @@ func DoPVerb(verb string, route string, params map[string]interface{}) string {
 	request.Header.Set("Authorization", "BASIC "+sEnc)
 	//request.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 	request.Header.Set("Content-Type", "application/json")
-	request.Header.Set("Accept", "application/hal+json")
+	request.Header.Set("Cache-Control", "no-cache")
+	// 	request.Header.Set("Accept", "application/hal+json")
+	// 'Cache-Control': 'no-cache',
 	client := &http.Client{}
 
 	resp, err := client.Do(request)
