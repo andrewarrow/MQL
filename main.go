@@ -117,38 +117,47 @@ func RunAction(c *cli.Context) {
 	thing := map[string]interface{}{"selected": false, "value": 100}
 	rr := map[string]interface{}{"limit": thing}
 	query := map[string]interface{}{"create_query_run": true,
-		"limit": false, //"data_source_id": 8420,
-		//"name": "People",
+		"limit": false, "data_source_id": 8420,
+		"name":      "Query 2",
 		"raw_query": sql, "token": qToken}
 	iqueries := []map[string]interface{}{query}
 
-	report := map[string]interface{}{ //"name": "GunMeta", "description": "",
+	report := map[string]interface{}{"name": "Sanjose", "description": "",
 		"report_run": rr,
 		"queries[]":  iqueries,
 		"trk_source": "editor"}
 	ireport := map[string]interface{}{"report": report}
-	DoPVerb("POST", "reports/"+rToken+"/runs", ireport)
+	pverb := DoPVerb("POST", "reports/"+rToken+"/runs", ireport)
 
-	queries := DoVerb("reports/" + rToken + "/queries")
-
-	items := handleThing(queries, "queries", false)
-	for _, item := range items {
-		token, _ := item.GetString("token")
-		dsi, _ := item.GetNumber("data_source_id")
-		name, _ := item.GetString("name")
-		if token == qToken {
-			r := DoVerb("reports/" + rToken + "/queries/" + token + "/runs")
-			handleLinks(r, "query_runs", false)
-			SaveLast("query_run", "1")
-			fmt.Println(dsi, name)
-			break
-		}
+	v, _ := jason.NewObjectFromBytes([]byte(pverb))
+	if v == nil {
+		return
 	}
-	qlist := ReadList("query_runs")
-	r := DoVerbFullPath(qlist[0])
-	//fmt.Println(r)
-	r = DoVerbFullPath(qlist[0] + "/content.json")
-	fmt.Println(r)
+	newToken, _ := v.GetString("token")
+
+	fmt.Println(newToken)
+	if false {
+		queries := DoVerb("reports/" + rToken + "/queries")
+
+		items := handleThing(queries, "queries", false)
+		for _, item := range items {
+			token, _ := item.GetString("token")
+			dsi, _ := item.GetNumber("data_source_id")
+			name, _ := item.GetString("name")
+			if token == qToken {
+				r := DoVerb("reports/" + rToken + "/queries/" + token + "/runs")
+				handleLinks(r, "query_runs", true)
+				SaveLast("query_run", "1")
+				fmt.Println(dsi, name)
+				break
+			}
+		}
+		qlist := ReadList("query_runs")
+		fmt.Println(qlist[0])
+		r := DoVerbFullPath(qlist[0])
+		r = DoVerbFullPath(qlist[0] + "/content.json")
+		fmt.Println(r)
+	}
 }
 func SqlAction(c *cli.Context) {
 	rToken := ReadLast("report")

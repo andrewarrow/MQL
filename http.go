@@ -41,7 +41,7 @@ func DoPVerb(verb string, route string, params map[string]interface{}) string {
 		defer resp.Body.Close()
 		body, err := ioutil.ReadAll(resp.Body)
 		if err == nil {
-			if resp.StatusCode == 200 {
+			if resp.StatusCode == 202 {
 				return string(body)
 			} else {
 				fmt.Println(string(body))
