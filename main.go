@@ -116,67 +116,26 @@ func RunAction(c *cli.Context) {
 	sql := ReadSQL(qToken)
 	query := map[string]interface{}{"create_query_run": true,
 		"limit": true, "data_source_id": 8420,
-		"name":      "Query 1",
+		//"name":      "Query 1",
 		"raw_query": sql, "token": qToken}
 
 	ireport := map[string]interface{}{"query": query}
 	DoPVerb("PATCH", "reports/"+rToken+"/queries/"+qToken, ireport)
-	//fmt.Println(pverb)
-	r := DoVerb("reports/" + rToken + "/queries/" + qToken + "/runs")
-	//fmt.Println(r)
-	handleLinks(r, "query_runs", true)
-}
-func RunAction2(c *cli.Context) {
-	rToken := ReadLast("report")
-	qToken := ReadLast("query")
 
-	sql := ReadSQL(qToken)
-	thing := map[string]interface{}{"selected": false, "value": 100}
+	thing := map[string]interface{}{"selected": true, "value": 100}
 	rr := map[string]interface{}{"limit": thing}
-	query := map[string]interface{}{"create_query_run": true,
-		"limit": false, "data_source_id": 8420,
-		"name":      "Query 2",
-		"raw_query": sql, "token": qToken}
 	iqueries := []map[string]interface{}{query}
 
-	report := map[string]interface{}{"name": "Sanjose", "description": "",
+	report := map[string]interface{}{"name": "Api Test", "description": "",
 		"report_run": rr,
 		"queries[]":  iqueries,
 		"trk_source": "editor"}
-	ireport := map[string]interface{}{"report": report}
-	pverb := DoPVerb("POST", "reports/"+rToken+"/runs", ireport)
+	ireport = map[string]interface{}{"report": report}
+	DoPVerb("POST", "reports/"+rToken+"/runs", ireport)
+	time.Sleep(5 * time.Second)
 
-	v, _ := jason.NewObjectFromBytes([]byte(pverb))
-	if v == nil {
-		return
-	}
-	newToken, _ := v.GetString("token")
-	url := fmt.Sprintf("reports/%s/runs/%s/results/content.json", rToken, newToken)
-	r := DoVerb(url)
-	fmt.Println(r)
-
-	if false {
-		queries := DoVerb("reports/" + rToken + "/queries")
-
-		items := handleThing(queries, "queries", false)
-		for _, item := range items {
-			token, _ := item.GetString("token")
-			dsi, _ := item.GetNumber("data_source_id")
-			name, _ := item.GetString("name")
-			if token == qToken {
-				r := DoVerb("reports/" + rToken + "/queries/" + token + "/runs")
-				handleLinks(r, "query_runs", true)
-				SaveLast("query_run", "1")
-				fmt.Println(dsi, name)
-				break
-			}
-		}
-		qlist := ReadList("query_runs")
-		fmt.Println(qlist[0])
-		r := DoVerbFullPath(qlist[0])
-		r = DoVerbFullPath(qlist[0] + "/content.json")
-		fmt.Println(r)
-	}
+	r := DoVerb("reports/" + rToken + "/queries/" + qToken + "/runs")
+	handleLinks(r, "query_runs", true)
 }
 func SqlAction(c *cli.Context) {
 	rToken := ReadLast("report")
