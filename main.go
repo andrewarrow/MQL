@@ -115,6 +115,9 @@ func QueriesAction(c *cli.Context) {
 	handleThing(queries, "queries", true)
 }
 func RunAction(c *cli.Context) {
+	m := conf()
+	dsi_s := m["data_source_id"]
+	dsi, _ := strconv.Atoi(dsi_s)
 	rToken := ReadLast("report")
 	qToken := ReadLast("query")
 	qName := ReadLast("query_name")
@@ -124,7 +127,7 @@ func RunAction(c *cli.Context) {
 
 	sql := ReadSQL(qToken)
 	query := map[string]interface{}{"create_query_run": true,
-		"limit": true, "data_source_id": 8420,
+		"limit": true, "data_source_id": dsi,
 		"name":      qName,
 		"raw_query": sql, "token": qToken}
 
