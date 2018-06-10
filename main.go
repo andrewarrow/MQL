@@ -120,8 +120,11 @@ func RunAction(c *cli.Context) {
 		"raw_query": sql, "token": qToken}
 
 	ireport := map[string]interface{}{"query": query}
-	pverb := DoPVerb("PATCH", "reports/"+rToken+"/queries/"+qToken, ireport)
-	fmt.Println(pverb)
+	DoPVerb("PATCH", "reports/"+rToken+"/queries/"+qToken, ireport)
+	//fmt.Println(pverb)
+	r := DoVerb("reports/" + rToken + "/queries/" + qToken + "/runs")
+	//fmt.Println(r)
+	handleLinks(r, "query_runs", true)
 }
 func RunAction2(c *cli.Context) {
 	rToken := ReadLast("report")
