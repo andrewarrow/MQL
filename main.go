@@ -119,6 +119,9 @@ func RunAction(c *cli.Context) {
 	qToken := ReadLast("query")
 	qName := ReadLast("query_name")
 
+	r := DoVerb("reports/" + rToken + "/queries/" + qToken + "/runs")
+	cra := handleLinks(r, "query_runs", false)
+
 	sql := ReadSQL(qToken)
 	query := map[string]interface{}{"create_query_run": true,
 		"limit": true, "data_source_id": 8420,
@@ -138,10 +141,18 @@ func RunAction(c *cli.Context) {
 		"trk_source": "editor"}
 	ireport = map[string]interface{}{"report": report}
 	DoPVerb("POST", "reports/"+rToken+"/runs", ireport)
-	time.Sleep(5 * time.Second)
-
-	r := DoVerb("reports/" + rToken + "/queries/" + qToken + "/runs")
-	handleLinks(r, "query_runs", true)
+	for {
+		time.Sleep(1 * time.Second)
+		r := DoVerb("reports/" + rToken + "/queries/" + qToken + "/runs")
+		latest := handleLinks(r, "query_runs", false)
+		if latest != cra {
+			break
+		}
+		fmt.Println(latest)
+	}
+	list := ReadList("query_runs")
+	r = DoVerbFullPath(list[0] + "/content.json")
+	fmt.Println(r)
 }
 func SqlAction(c *cli.Context) {
 	rToken := ReadLast("report")
@@ -162,27 +173,29 @@ func SqlAction(c *cli.Context) {
 	cmd.Stdout = os.Stdout
 	cmd.Run()
 }
-func handleLinks(thing, meta string, print bool) []*jason.Object {
+func handleLinks(thing, meta string, print bool) string {
 	v, _ := jason.NewObjectFromBytes([]byte(thing))
 	if v == nil {
-		return []*jason.Object{}
+		return ""
 	}
 	e, _ := v.GetObject("_embedded")
 	s, _ := e.GetObjectArray(meta)
 	//token name
 	list := []string{}
+	cra := ""
 	for i, item := range s {
 		l, _ := item.GetObject("_links")
 		r, _ := l.GetObject("result")
 		href, _ := r.GetString("href")
-		cra, _ := item.GetString("created_at")
+		cra, _ = item.GetString("created_at")
 		//coa, _ := item.GetString("completed_at")
 		list = append(list, href)
 		if print {
 			tokens := strings.Split(cra, "T")
 			fmt.Printf("%d. %s %s\n", i+1, tokens[0], strings.Split(tokens[1], ".")[0])
 		}
+		break
 	}
 	SaveList(meta, list)
-	return s
+	return cra
 }
