@@ -44,4 +44,9 @@ $ ./alamode run | jq .
 
 (this take changes you made in vim and runs the new sql, you can pipe output to jq)
 
+=Setup=
+
+cp conf/settings.dist conf/settings
+
+Then edit your conf/settings file with your api token and secret, etc.
 
