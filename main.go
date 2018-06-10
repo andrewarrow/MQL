@@ -114,6 +114,20 @@ func RunAction(c *cli.Context) {
 	qToken := ReadLast("query")
 
 	sql := ReadSQL(qToken)
+	query := map[string]interface{}{"create_query_run": true,
+		"limit": true, "data_source_id": 8420,
+		"name":      "Query 1",
+		"raw_query": sql, "token": qToken}
+
+	ireport := map[string]interface{}{"query": query}
+	pverb := DoPVerb("PATCH", "reports/"+rToken+"/queries/"+qToken, ireport)
+	fmt.Println(pverb)
+}
+func RunAction2(c *cli.Context) {
+	rToken := ReadLast("report")
+	qToken := ReadLast("query")
+
+	sql := ReadSQL(qToken)
 	thing := map[string]interface{}{"selected": false, "value": 100}
 	rr := map[string]interface{}{"limit": thing}
 	query := map[string]interface{}{"create_query_run": true,

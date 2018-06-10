@@ -68,6 +68,7 @@ func DoVerbFullPath(route string) string {
 	request.Header.Add("Accept-Encoding", "gzip")
 	request.Header.Set("Authorization", "BASIC "+sEnc)
 	request.Header.Set("Content-Type", "application/json")
+	request.Header.Set("Cache-Control", "no-cache")
 	request.Header.Set("Accept", "application/hal+json")
 	client := &http.Client{}
 
