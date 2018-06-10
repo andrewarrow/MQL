@@ -142,7 +142,7 @@ func RunAction(c *cli.Context) {
 	ireport = map[string]interface{}{"report": report}
 	DoPVerb("POST", "reports/"+rToken+"/runs", ireport)
 	for {
-		time.Sleep(1 * time.Second)
+		time.Sleep(750 * time.Millisecond)
 		r := DoVerb("reports/" + rToken + "/queries/" + qToken + "/runs")
 		latest := handleLinks(r, "query_runs", false)
 		if latest != cra {
@@ -151,6 +151,7 @@ func RunAction(c *cli.Context) {
 		fmt.Println(latest)
 	}
 	list := ReadList("query_runs")
+	time.Sleep(750 * time.Millisecond)
 	r = DoVerbFullPath(list[0] + "/content.json")
 	fmt.Println(r)
 }
