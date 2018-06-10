@@ -52,7 +52,7 @@ func handleThing(thing, meta string, print bool) []*jason.Object {
 		stoken, _ := item.GetString("token")
 		sname, _ := item.GetString("name")
 		list = append(list, stoken)
-		list_names = append(list, sname)
+		list_names = append(list_names, sname)
 		if print {
 			fmt.Printf("%d. %s %s\n", i+1, stoken, sname)
 		}
